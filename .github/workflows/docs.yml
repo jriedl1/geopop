@@ -29,6 +29,12 @@ jobs:
                   pip install folium
                   pip install geopandas
                   pip install ipyleaflet
+                  pip install mkdocs
+                  pip install mkdocstrings  # Add this line to install mkdocstrings plugin
+
+            - name: Build documentation
+              run: mkdocs build --clean
+
             - name: Discover typos with codespell
               run: |
                   codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
