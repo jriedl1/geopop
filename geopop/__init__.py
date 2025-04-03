@@ -2,4 +2,4 @@
 
 __author__ = """John Riedl"""
 __email__ = "john.riedl@icloud.com"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
