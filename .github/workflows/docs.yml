@@ -30,10 +30,12 @@ jobs:
                   pip install geopandas
                   pip install ipyleaflet
                   pip install mkdocs
+                  pip install mkdocs-material
                   pip install mkdocstrings  # Add this line to install mkdocstrings plugin
 
             - name: Build documentation
               run: mkdocs build --clean
+
 
             - name: Discover typos with codespell
               run: |
