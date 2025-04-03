@@ -35,5 +35,10 @@ jobs:
             - name: PKG-TEST
               run: |
                   python -m unittest discover tests/
+
+            - name: Install MkDocs
+              run: |
+                  pip install mkdocs mkdocs-material
+
             - run: mkdocs gh-deploy --force
 
