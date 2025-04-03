@@ -9,7 +9,7 @@
 
 -   Free software: MIT License
 -   Documentation: <https://jriedl1.github.io/geopop>
-    
+
 
 ## Features
 
