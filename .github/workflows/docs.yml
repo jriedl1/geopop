@@ -32,6 +32,7 @@ jobs:
                   pip install mkdocs
                   pip install mkdocs-material
                   pip install mkdocstrings  # Add this line to install mkdocstrings plugin
+                  pip install mkdocs-git-revision-date-localized-plugin
 
             - name: Build documentation
               run: mkdocs build --clean
