@@ -14,6 +14,11 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Add repository for updated GDAL
+      run: |
+        sudo add-apt-repository ppa:ubuntugis/ppa -y
+        sudo apt-get update
+
     - name: Install GDAL
       run: sudo apt-get install -y gdal-bin libgdal-dev
 
