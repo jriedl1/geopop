@@ -1,4 +1,12 @@
+codespell
+Cython
 folium
+gdal
 geopandas
 ipyleaflet
+localtileserver
+mkdocs
+mkdocs-material
+mkdocstrings
 numpy
+pyproj

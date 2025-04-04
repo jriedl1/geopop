@@ -4,6 +4,7 @@ on:
         branches:
             - main
             - master
+
 jobs:
     deploy:
         runs-on: ubuntu-latest
@@ -15,43 +16,57 @@ jobs:
               with:
                   python-version: "3.11"
 
-            - name: Install codespell
-              run: |
-                    python -m pip install --upgrade pip
-                    pip install codespell
-
-            - name: Run codespell
-              run: codespell
+            - name: Cache Python dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/pip
+                  key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pip-
 
             - name: Install dependencies
               run: |
                   python -m pip install --upgrade pip
-                  pip install folium
-                  pip install geopandas
-                  pip install ipyleaflet
-                  pip install mkdocs
-                  pip install mkdocs-material
-                  pip install mkdocstrings  # Add this line to install mkdocstrings plugin
-                  pip install mkdocs-git-revision-date-localized-plugin
+                  pip install -r requirements.txt -r requirements_dev.txt
+                  pip install .
 
-            - name: Verify plugin installation
+            - name: Validate requirements files
               run: |
-                  pip show mkdocs-git-revision-date-localized-plugin
-
-            - name: Build documentation
-              run: mkdocs build --clean
-
+                  python -m pip check
 
             - name: Discover typos with codespell
               run: |
                   codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
-            - name: PKG-TEST
+
+            - name: Lint Markdown files
               run: |
-                  python -m unittest discover tests/
+                  pip install markdownlint-cli
+                  markdownlint docs/**/*.md
 
-            - name: Install MkDocs
+            - name: Build documentation
+              run: mkdocs build --clean
+
+            - name: Check for broken links
               run: |
-                  pip install mkdocs mkdocs-material
+                  pip install mkdocs-link-check
+                  mkdocs build
+                  mkdocs-link-check ./site
 
-            - run: mkdocs gh-deploy --force
+            - name: Test documentation locally
+              run: |
+                  mkdocs serve --dev-addr=0.0.0.0:8000 &
+                  sleep 10
+                  curl -I http://localhost:8000
 
+            - name: Upload built documentation
+              uses: actions/upload-artifact@v3
+              with:
+                  name: built-docs
+                  path: ./site
+
+            - name: Verify package installation
+              run: |
+                  python -c "import geopop"
+
+            - name: Deploy documentation to GitHub Pages
+              run: mkdocs gh-deploy --force
