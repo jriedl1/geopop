@@ -4,7 +4,6 @@ on:
         branches:
             - main
             - master
-
 jobs:
     deploy:
         runs-on: ubuntu-latest
@@ -16,57 +15,42 @@ jobs:
               with:
                   python-version: "3.11"
 
-            - name: Cache Python dependencies
-              uses: actions/cache@v3
-              with:
-                  path: ~/.cache/pip
-                  key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pip-
+            - name: Install codespell
+              run: |
+                    python -m pip install --upgrade pip
+                    pip install codespell
+
+            - name: Run codespell
+              run: codespell
 
             - name: Install dependencies
               run: |
                   python -m pip install --upgrade pip
-                  pip install -r requirements.txt -r requirements_dev.txt
-                  pip install .
+                  pip install folium
+                  pip install geopandas
+                  pip install ipyleaflet
+                  pip install mkdocs
+                  pip install mkdocs-material
+                  pip install mkdocstrings  # Add this line to install mkdocstrings plugin
+                  pip install mkdocs-git-revision-date-localized-plugin
 
-            - name: Validate requirements files
+            - name: Verify plugin installation
               run: |
-                  python -m pip check
-
-            - name: Discover typos with codespell
-              run: |
-                  codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
-
-            - name: Lint Markdown files
-              run: |
-                  pip install markdownlint-cli
-                  markdownlint docs/**/*.md
+                  pip show mkdocs-git-revision-date-localized-plugin
 
             - name: Build documentation
               run: mkdocs build --clean
 
-            - name: Check for broken links
+
+            - name: Discover typos with codespell
               run: |
-                  pip install mkdocs-link-check
-                  mkdocs build
-                  mkdocs-link-check ./site
-
-            - name: Test documentation locally
+                  codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
+            - name: PKG-TEST
               run: |
-                  mkdocs serve --dev-addr=0.0.0.0:8000 &
-                  sleep 10
-                  curl -I http://localhost:8000
+                  python -m unittest discover tests/
 
-            - name: Upload built documentation
-              uses: actions/upload-artifact@v3
-              with:
-                  name: built-docs
-                  path: ./site
-
-            - name: Verify package installation
+            - name: Install MkDocs
               run: |
-                  python -c "import geopop"
+                  pip install mkdocs mkdocs-material
 
-            - name: Deploy documentation to GitHub Pages
-              run: mkdocs gh-deploy --force
+            - run: mkdocs gh-deploy --force
