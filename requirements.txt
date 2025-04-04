@@ -2,6 +2,7 @@ codespell
 Cython
 folium
 gdal
+GDAL==3.10.2
 geopandas
 ipyleaflet
 localtileserver
