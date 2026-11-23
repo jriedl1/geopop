@@ -2,7 +2,6 @@
 
 """Tests for `geopop` package."""
 
-
 import unittest
 
 from geopop import geopop
